@@ -1,0 +1,80 @@
+body{
+    font-family:'Times New Roman', Times, serif;
+    height: 100%; /* Cuando se achica la pantalla, el body toma el 100%, haciendo que se vea todo */ 
+    margin-bottom: 10px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+header{
+    font-size: 25px;
+    font-weight: 800;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    width: 100%;
+    background-color: darkkhaki;
+}
+
+h1{
+    color: green;
+    text-transform:uppercase; /*Pone en mayúscula los h1*/
+    border-color: red;
+    border-style: double; /*Dos líneas en los bordes*/
+}
+
+p{
+    margin-left: 100px;
+}
+
+li{
+    text-align: justify; /*Jusitificar texto como en word*/
+    font-family: 'Courier New', Courier, monospace;
+    font-size: small;
+}
+
+nav li {
+    display: inline-block;
+    width: 10%;
+    padding: 5px 10px; /*El primero es sobre arriba y abajao y el segundo derecha e izquierda*/
+    border: 1px red solid;
+    background-color: aqua;
+    border-radius: 8px; /*Le da forma redondeada*/
+    text-align: center;
+}
+
+nav li:hover { /*hover es cuando pones el cursor sobre el elemento y va a cambiar*/
+    background-color: yellow;
+    color: red;
+}
+
+svg{
+    width: 100px;
+    max-width: 100%;
+    display: block;
+    margin: auto;
+}
+
+#contenedor{ /*El hastag se refiere al "id" */
+    text-align: left;
+    width: 100%;
+    margin: auto;
+}
+
+#principal{ /*El hastag se refiere al "id" */
+    width: 75%;
+    float: left;
+}
+
+#lateral{
+    width: 20%;
+    background-color: blueviolet;
+    float: right;
+    font-size: small;
+}
+
+footer {
+    position: relative;
+    width: 100%;
+    clear: both;
+    background-color: aqua;
+    
+}
