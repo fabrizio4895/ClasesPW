@@ -1,3 +1,40 @@
-section + h1{
-    background-color: violet;
+/*
+p {
+    background-color: red;
+}
+*/
+
+/*Para id*/
+/*
+#main-header {
+    background-color: yellow;
+}
+*/
+
+/*Para class*/
+/*
+.post-meta{
+    background-color: tomato;
+}
+*/
+
+/*
+em, h1 {
+    background-color: blue;
+}
+*/
+
+/*Selección de descendencia, afecta solo a las etiquetas h1 que se encuentren en una section*/
+section h1 {
+    background-color: greenyellow;
+}
+
+/*Selección de descendencia directa, afecta solo si las etiquetas h1 se encuentran justo después de la etiqueta section*/
+section > h1 {
+    background-color: greenyellow;
+}
+
+/*Selección de descendencia directa, afecta solo a las etiquetas h1 que se encuentren justo después de la etiqueta section*/
+section + h1 {
+    background-color: aquamarine;
 }

@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <title>...:: I N D E X ::...</title>
+    <!--link es un recurso que se utiliza siempre se utiliza con relacion a estilo de página "stylesheet" y referencia a una hoja de css-->
+    <!--Se puede referenciar una hoja de estilos "css" ya sea con link, style y cualquier etiqueta, pero con el atributo style-->
     <link rel="stylesheet" href="./assets/styles/estilo1.css" />
 </head>
 
@@ -28,40 +30,6 @@
         </header>
 
         <div id="principal">
-            <fieldset>
-                <legend>Información</legend>
-                <form action="#" method="POST">
-                    <p>
-                        <label for="idnombre">Nombre :</label>
-                        <input name='nombre' id="idnombre" type='text' tabindex='1' required>
-                    </p>
-                    <p>
-                        <label for="idapellido">Apellido :</label>
-                        <input name='apellido' id="idapellido" type='text' tabindex='2' required>
-                    </p>
-                    <p>
-                        <label for="idtipo">Tipo :</label>
-                        <select name="idtipo" tabindex="3">
-                            <option value="1">Solicitud</option>
-                            <option value="2" selected>Reclamo</option>
-                        </select>
-                    </p>
-                    <p>
-                        <label for="idtelefono">Telefono :</label>
-                        <input name='telefono' id="idtelefono" type='tel' tabindex='4' required>
-                    </p>
-        
-        
-                    <label for="iddetalle">Ingrese el detalle (Max 50 caracteres) :</label>
-                    <p>
-                        <textarea name='detalle' id="iddetalle" rows="5" cols="40" maxlength="50">
-                        </textarea>
-                    </p>
-                    
-                    <input type="submit" value="E N V I A R">
-                </form>
-            </fieldset>
-            <!-- <hr>
             <article class="post">
                 <section aria-label="seccion de presentacion">
                     <h1>Presentacion</h1>
@@ -212,7 +180,7 @@
                 </dl>
             </aside>
         </div>
-        <hr> -->
+        <hr>
 
     </div>
 
@@ -234,11 +202,8 @@
         
     </div>
 </body>
-
 <script>
-    /*alert("Hola Mundo!");*/
-    /*document.getElementById("principal").innerHTML = "ya fue..."*/ /*Reemplaza el id principal por el texto "ya fue..."*/
-    
+    document.getElementById("principal").innerHTML = "ya fue..." /*Esto hace que se borre de la memoria, más no de la página*/
+    /*Esto hace que del documento, selecciona el id que se especifique y lo cambia con el innerHTML*/
 </script>
-
 </html>

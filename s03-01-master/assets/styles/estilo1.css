@@ -1,32 +1,38 @@
 body{
-    font-family:'Times New Roman', Times, serif;
-    height: 100%; /* Cuando se achica la pantalla, el body toma el 100%, haciendo que se vea todo */ 
+    font-family:Arial, Helvetica, sans-serif;
+    height: 100%; /*Cuando la página se minimice, se seguirá viendo todo el ancho de la página*/
     margin-bottom: 10px;
-    margin-left: 10%;
-    margin-right: 10%;
+    margin-left: 10%; /*Se corre un 10% de la izquierda a la derecha*/
+    margin-right: 10%; /*Se corre un 10% de la derecha a la izquierda*/
 }
 
 header{
     font-size: 25px;
     font-weight: 800;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    width: 100%;
-    background-color: darkkhaki;
+    width: 100%; /*Toma el 100% del ancho de la página*/
+    background-color: aqua;
 }
 
 h1{
-    color: green;
-    text-transform:uppercase; /*Pone en mayúscula los h1*/
+    color: lightblue;
+    background-color: black;
+    text-transform: uppercase; /*Cada palabra de h1 se pondrá en mayúscula*/
+    /*
+    text-shadow: .2em .2em silver; Esto es para colocar sombra al texto
+    */ 
     border-color: red;
-    border-style: double; /*Dos líneas en los bordes*/
+    border-style: double; /*Le pone estilo doble línea al borde, para que se aplique el color del borde que, en este caso, es rojo*/
+    border-radius: 10px; /*El h1 ahora tendrá forma redondeada por el radius*/
 }
 
 p{
-    margin-left: 100px;
+    font-size: small;
+    margin-left: 100px; /*Se corre 100px de la izquierda para la derecha*/
 }
 
 li{
-    text-align: justify; /*Jusitificar texto como en word*/
+    text-align: justify;
     font-family: 'Courier New', Courier, monospace;
     font-size: small;
 }
@@ -34,47 +40,51 @@ li{
 nav li {
     display: inline-block;
     width: 10%;
-    padding: 5px 10px; /*El primero es sobre arriba y abajao y el segundo derecha e izquierda*/
-    border: 1px red solid;
-    background-color: aqua;
-    border-radius: 8px; /*Le da forma redondeada*/
+    padding: 5px 10px;
+    border: 1px black solid;
+    background-color: tomato;
+    border-radius: 10px;
     text-align: center;
 }
 
-nav li:hover { /*hover es cuando pones el cursor sobre el elemento y va a cambiar*/
-    background-color: yellow;
-    color: red;
+nav li:hover{ /*El hover es cuando pongas el cursor encima de la etiqueta li, se cambie el background color y el color de letra*/
+    background-color: yellowgreen;
+    color: black;
 }
 
-svg{
+svg {
     width: 100px;
+    height: 100px;
     max-width: 100%;
-    display: block;
-    margin: auto;
 }
 
-#contenedor{ /*El hastag se refiere al "id" */
+/*Para id, es con el #*/
+#contenedor{
     text-align: left;
     width: 100%;
-    margin: auto;
+    margin:auto;
 }
 
-#principal{ /*El hastag se refiere al "id" */
+#principal{
     width: 75%;
-    float: left;
+    float: left; /*Lo que flote/sobre, que se vaya a la izquierda*/
+
 }
 
-#lateral{
+#lateral{/*Desde la imagen hasta Secretaria de Grados y Títulos*/
     width: 20%;
-    background-color: blueviolet;
+    background-color: orange;
     float: right;
     font-size: small;
+    text-align: justify;
 }
 
-footer {
-    position: relative;
+
+footer{
+    position: relative; /**/
     width: 100%;
-    clear: both;
-    background-color: aqua;
-    
+    clear: both; /*Se olvida de los flotantes anteriores (floats) y lo coloca debajo*/
+    background-color: black;
+    color: wheat;
+    text-align: justify;
 }
