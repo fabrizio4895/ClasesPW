@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>...:: Aprendiendo DOM::...</title>
+  <link rel="stylesheet" href="./css/dom.css" />
+</head>
+
+<body>
+  <h1>Aprendiendo a trabajar con DOM</h1>
+  <p>El modelo de objeto de documento (DOM) es una API para los documentos HTML.</p>
+  <p>Permite una representación estructurada del documento y define de que
+    manera se puede acceder y modificar la estructura, estilo y contenido.</p>
+  <br>
+  <hr>
+  <p>Vamos a aprovechar algunas marcas de automoviles ... para manejar arreglos con <b>JavaScript</b> ... </p>
+  <div id="contenido">
+    <br>
+    <fieldset>
+      <legend>Formulario de datos</legend>
+      <form action="#" method="GET">
+        <label>Marca y Modelo del Automovil: </label>
+        <input type="text" name="marmod" id="marmod" />
+        <br><br><br>
+
+        <input type="button" value="Insertar al final" onclick="agregarFinal()" />
+        <input type="button" value="Insertar antes" onclick="agregarAntes()" />
+        <input type="button" value="Reemplazar" onclick="reemplazar()" />
+        <input type="button" value="Eliminar" onclick="eliminar()" />
+        <input type="reset" value="Limpiar" />
+      </form>
+    </fieldset>
+    <hr>
+    <h2>Los comerciales</h2>
+    <p>Esta lista es referencial ... </p>
+    <ul class="c1 c2" id="comercial">
+      <li>Audi</li>
+      <li>BMW</li>
+      <li>Chevrolet</li>
+      <Li>Citroen</Li>
+      <Li>Fiat</Li>
+      <li>Ford</li>
+      <li id="F">Honda</li>
+      <li>Jeep</li>
+      <li>Kia</li>
+      <li>Mazda</li>
+      <li>Nissan</li>
+      <li>Renault</li>
+      <li>Subaru</li>
+      <li>Suzuki</li>
+      <li>Toyota</li>
+    </ul>
+    <h2>Resultados</h2>
+    <section id="rpta1"></section>
+    <section id="rpta2"></section>
+    <section id="rpta3"></section>
+    <section id="rpta4"></section>
+    <section id="rpta5"></section>
+  </div>
+  <footer>
+    &copy; Programacion Web 2024-1
+  </footer>
+
+  <script src="./js/ejemplo-06.js"></script>
+</body>
+
+</html>
