@@ -1,0 +1,113 @@
+#root {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    background-color: red;
+}
+
+header {
+    background-color: black;
+    padding: 5px;
+    text-align: right;
+    color: white;
+}
+
+nav {
+    width: 100%;
+    line-height: 0px;
+    background-color: white;
+    text-align: left;
+}
+
+nav ul {
+    width: 100%;
+    background-color: white;
+    display: inline-block;   
+}
+
+.arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    margin-left: 10px;
+}
+
+footer {
+    text-align: center;
+    font-size: small;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    height: 20px;
+    width: 100%;
+    background: #999;
+}
+
+.logoPrincipal {
+    display: flex;
+    margin: 0 auto;
+    margin-top: 15px;
+    overflow: hidden;
+    justify-content: center;
+  }
+  
+  .logoPrincipal img {
+    height: 100%;
+  }
+
+  .data {
+    margin-left: 20%;
+    margin-right: 20%;
+    border-color: black;
+    background-color: black;
+    align-items: left;
+  }
+
+  .data ul li {
+    display : block;
+    text-align: left;
+    color: white;
+  }
+
+  .sr-only {
+    color: white;
+    padding-right : 10px ;
+    margin-right: 10px;
+  }
+
+.search-wrapper {
+    margin: 48px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.BtnBuscar {
+    font-size:10px;
+    font-family:Verdana,Helvetica;
+    font-weight:bold;
+    color:white;
+    background:#638cb5;
+    border:5px;
+    width:80px;
+    height:19px;
+    margin: 0px 0px 0px 5px;
+  }
+
+  .card-grid {
+    margin: 2em 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 48px;
+}
+
+
+.autito {
+  height: 100px;
+  width: 250px;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
