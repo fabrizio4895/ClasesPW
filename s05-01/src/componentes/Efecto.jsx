@@ -1,6 +1,5 @@
 import React, {useState,useEffect} from 'react'
-import axios from 'axios'
-
+import axios from 'axios' //Para las llamadas asíncronas
 import '../App.css'
 
 function Efecto (){
