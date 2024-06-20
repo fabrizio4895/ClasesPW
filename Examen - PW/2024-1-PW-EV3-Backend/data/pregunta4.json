@@ -1,0 +1,29 @@
+{
+    "id": 9999,
+    "name": "TU NOMBRE PREGUNTA 4",
+    "height": 180,
+    "weight": 90,
+    "xp": 1000,
+    "image_url": "https://www.ulima.edu.pe/890.png",
+    "pokemon_url": "https://www.ulima.edu.pe/alumnito.jpg",
+    "abilities": [
+        {
+            "name": "stress",
+            "is_hidden": false
+        }
+    ],
+    "stats": [
+        {
+            "name": "notas",
+            "base_stat": 1
+        }
+    ],
+    "types": [
+        {
+            "name": "alumno"
+        },
+        {
+            "name": "estudiante"
+        }
+    ]
+}
