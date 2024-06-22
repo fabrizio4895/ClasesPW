@@ -1,0 +1,11 @@
+const path = require('path');
+
+// Para crear las carpetas y archivos que crea el comando:   npx sequelize init
+// Pero, todo en la misma carpeta, llamada db
+
+module.exports = {
+    'config' : path.resolve('db/config','config.js'), // Crea una carpeta db, y en ella una carpeta config y en esa carpeta creas un archivo llamado "config.js"
+    'models-path' : path.resolve('db','models'),
+    'seeders-path' : path.resolve('db','seeders'),
+    'migrations-path' : path.resolve('db','migrations')
+}

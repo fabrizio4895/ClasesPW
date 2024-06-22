@@ -1,0 +1,1164 @@
+2024-06-22 12:35:52.177 -05 [14660] LOG:  iniciando PostgreSQL 16.3, compiled by Visual C++ build 1939, 64-bit
+2024-06-22 12:35:52.180 -05 [14660] LOG:  escuchando en la direcci�n IPv6 �::1�, port 5432
+2024-06-22 12:35:52.180 -05 [14660] LOG:  escuchando en la direcci�n IPv4 �127.0.0.1�, port 5432
+2024-06-22 12:35:52.210 -05 [10704] LOG:  el sistema de bases de datos fue apagado en 2024-06-22 12:32:03 -05
+2024-06-22 12:35:52.243 -05 [14660] LOG:  el sistema de bases de datos est� listo para aceptar conexiones
+2024-06-22 12:40:52.220 -05 [7580] LOG:  empezando checkpoint: time
+2024-06-22 12:40:56.902 -05 [7580] LOG:  checkpoint complete: wrote 46 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.670 s, sync=0.006 s, total=4.687 s; sync files=11, longest=0.001 s, average=0.001 s; distance=275 kB, estimate=275 kB; lsn=0/15B30F0, redo lsn=0/15B30B8
+2024-06-22 12:42:53.014 -05 [22236] FATAL:  la autentificaci�n password fall� para el usuario �p�stgres�
+2024-06-22 12:42:53.014 -05 [22236] DETALLE:  No existe el rol �p�stgres�.
+	Connection matched file "C:/Users/User/Desktop/ClasesPW/BD/DATA/pg_hba.conf" line 117: "host    all             all             ::1/128                 password"
+2024-06-22 13:02:07.516 -05 [3060] ERROR:  error de sintaxis en o cerca de «databse» en carácter 8
+2024-06-22 13:02:07.516 -05 [3060] SENTENCIA:  create databse dvdrental;
+2024-06-22 13:05:52.953 -05 [7580] LOG:  empezando checkpoint: time
+2024-06-22 13:06:21.250 -05 [12304] ERROR:  ya existe un tipo «mpaa_rating»
+2024-06-22 13:06:21.250 -05 [12304] SENTENCIA:  CREATE TYPE public.mpaa_rating AS ENUM (
+	    'G',
+	    'PG',
+	    'PG-13',
+	    'R',
+	    'NC-17'
+	);
+	
+	
+	
+2024-06-22 13:06:21.254 -05 [12304] ERROR:  ya existe un tipo «year»
+2024-06-22 13:06:21.254 -05 [12304] SENTENCIA:  CREATE DOMAIN public.year AS integer
+		CONSTRAINT year_check CHECK (((VALUE >= 1901) AND (VALUE <= 2155)));
+	
+	
+	
+2024-06-22 13:06:21.258 -05 [12304] ERROR:  ya existe una función «_group_concat» con los mismos argumentos
+2024-06-22 13:06:21.258 -05 [12304] SENTENCIA:  CREATE FUNCTION public._group_concat(text, text) RETURNS text
+	    LANGUAGE sql IMMUTABLE
+	    AS $_$
+	SELECT CASE
+	  WHEN $2 IS NULL THEN $1
+	  WHEN $1 IS NULL THEN $2
+	  ELSE $1 || ', ' || $2
+	END
+	$_$;
+	
+	
+	
+2024-06-22 13:06:21.269 -05 [12304] ERROR:  ya existe una función «film_in_stock» con los mismos argumentos
+2024-06-22 13:06:21.269 -05 [12304] SENTENCIA:  CREATE FUNCTION public.film_in_stock(p_film_id integer, p_store_id integer, OUT p_film_count integer) RETURNS SETOF integer
+	    LANGUAGE sql
+	    AS $_$
+	     SELECT inventory_id
+	     FROM inventory
+	     WHERE film_id = $1
+	     AND store_id = $2
+	     AND inventory_in_stock(inventory_id);
+	$_$;
+	
+	
+	
+2024-06-22 13:06:21.283 -05 [12304] ERROR:  ya existe una función «film_not_in_stock» con los mismos argumentos
+2024-06-22 13:06:21.283 -05 [12304] SENTENCIA:  CREATE FUNCTION public.film_not_in_stock(p_film_id integer, p_store_id integer, OUT p_film_count integer) RETURNS SETOF integer
+	    LANGUAGE sql
+	    AS $_$
+	    SELECT inventory_id
+	    FROM inventory
+	    WHERE film_id = $1
+	    AND store_id = $2
+	    AND NOT inventory_in_stock(inventory_id);
+	$_$;
+	
+	
+	
+2024-06-22 13:06:21.293 -05 [12304] ERROR:  ya existe una función «get_customer_balance» con los mismos argumentos
+2024-06-22 13:06:21.293 -05 [12304] SENTENCIA:  CREATE FUNCTION public.get_customer_balance(p_customer_id integer, p_effective_date timestamp without time zone) RETURNS numeric
+	    LANGUAGE plpgsql
+	    AS $$
+	       --#OK, WE NEED TO CALCULATE THE CURRENT BALANCE GIVEN A CUSTOMER_ID AND A DATE
+	       --#THAT WE WANT THE BALANCE TO BE EFFECTIVE FOR. THE BALANCE IS:
+	       --#   1) RENTAL FEES FOR ALL PREVIOUS RENTALS
+	       --#   2) ONE DOLLAR FOR EVERY DAY THE PREVIOUS RENTALS ARE OVERDUE
+	       --#   3) IF A FILM IS MORE THAN RENTAL_DURATION * 2 OVERDUE, CHARGE THE REPLACEMENT_COST
+	       --#   4) SUBTRACT ALL PAYMENTS MADE BEFORE THE DATE SPECIFIED
+	DECLARE
+	    v_rentfees DECIMAL(5,2); --#FEES PAID TO RENT THE VIDEOS INITIALLY
+	    v_overfees INTEGER;      --#LATE FEES FOR PRIOR RENTALS
+	    v_payments DECIMAL(5,2); --#SUM OF PAYMENTS MADE PREVIOUSLY
+	BEGIN
+	    SELECT COALESCE(SUM(film.rental_rate),0) INTO v_rentfees
+	    FROM film, inventory, rental
+	    WHERE film.film_id = inventory.film_id
+	      AND inventory.inventory_id = rental.inventory_id
+	      AND rental.rental_date <= p_effective_date
+	      AND rental.customer_id = p_customer_id;
+	
+	    SELECT COALESCE(SUM(IF((rental.return_date - rental.rental_date) > (film.rental_duration * '1 day'::interval),
+	        ((rental.return_date - rental.rental_date) - (film.rental_duration * '1 day'::interval)),0)),0) INTO v_overfees
+	    FROM rental, inventory, film
+	    WHERE film.film_id = inventory.film_id
+	      AND inventory.inventory_id = rental.inventory_id
+	      AND rental.rental_date <= p_effective_date
+	      AND rental.customer_id = p_customer_id;
+	
+	    SELECT COALESCE(SUM(payment.amount),0) INTO v_payments
+	    FROM payment
+	    WHERE payment.payment_date <= p_effective_date
+	    AND payment.customer_id = p_customer_id;
+	
+	    RETURN v_rentfees + v_overfees - v_payments;
+	END
+	$$;
+	
+	
+	
+2024-06-22 13:06:21.333 -05 [12304] ERROR:  ya existe una función «inventory_held_by_customer» con los mismos argumentos
+2024-06-22 13:06:21.333 -05 [12304] SENTENCIA:  CREATE FUNCTION public.inventory_held_by_customer(p_inventory_id integer) RETURNS integer
+	    LANGUAGE plpgsql
+	    AS $$
+	DECLARE
+	    v_customer_id INTEGER;
+	BEGIN
+	
+	  SELECT customer_id INTO v_customer_id
+	  FROM rental
+	  WHERE return_date IS NULL
+	  AND inventory_id = p_inventory_id;
+	
+	  RETURN v_customer_id;
+	END $$;
+	
+	
+	
+2024-06-22 13:06:21.344 -05 [12304] ERROR:  ya existe una función «inventory_in_stock» con los mismos argumentos
+2024-06-22 13:06:21.344 -05 [12304] SENTENCIA:  CREATE FUNCTION public.inventory_in_stock(p_inventory_id integer) RETURNS boolean
+	    LANGUAGE plpgsql
+	    AS $$
+	DECLARE
+	    v_rentals INTEGER;
+	    v_out     INTEGER;
+	BEGIN
+	    -- AN ITEM IS IN-STOCK IF THERE ARE EITHER NO ROWS IN THE rental TABLE
+	    -- FOR THE ITEM OR ALL ROWS HAVE return_date POPULATED
+	
+	    SELECT count(*) INTO v_rentals
+	    FROM rental
+	    WHERE inventory_id = p_inventory_id;
+	
+	    IF v_rentals = 0 THEN
+	      RETURN TRUE;
+	    END IF;
+	
+	    SELECT COUNT(rental_id) INTO v_out
+	    FROM inventory LEFT JOIN rental USING(inventory_id)
+	    WHERE inventory.inventory_id = p_inventory_id
+	    AND rental.return_date IS NULL;
+	
+	    IF v_out > 0 THEN
+	      RETURN FALSE;
+	    ELSE
+	      RETURN TRUE;
+	    END IF;
+	END $$;
+	
+	
+	
+2024-06-22 13:06:21.365 -05 [12304] ERROR:  ya existe una función «last_day» con los mismos argumentos
+2024-06-22 13:06:21.365 -05 [12304] SENTENCIA:  CREATE FUNCTION public.last_day(timestamp without time zone) RETURNS date
+	    LANGUAGE sql IMMUTABLE STRICT
+	    AS $_$
+	  SELECT CASE
+	    WHEN EXTRACT(MONTH FROM $1) = 12 THEN
+	      (((EXTRACT(YEAR FROM $1) + 1) operator(pg_catalog.||) '-01-01')::date - INTERVAL '1 day')::date
+	    ELSE
+	      ((EXTRACT(YEAR FROM $1) operator(pg_catalog.||) '-' operator(pg_catalog.||) (EXTRACT(MONTH FROM $1) + 1) operator(pg_catalog.||) '-01')::date - INTERVAL '1 day')::date
+	    END
+	$_$;
+	
+	
+	
+2024-06-22 13:06:21.379 -05 [12304] ERROR:  ya existe una función «last_updated» con los mismos argumentos
+2024-06-22 13:06:21.379 -05 [12304] SENTENCIA:  CREATE FUNCTION public.last_updated() RETURNS trigger
+	    LANGUAGE plpgsql
+	    AS $$
+	BEGIN
+	    NEW.last_update = CURRENT_TIMESTAMP;
+	    RETURN NEW;
+	END $$;
+	
+	
+	
+2024-06-22 13:06:21.387 -05 [12304] ERROR:  la relación «customer_customer_id_seq» ya existe
+2024-06-22 13:06:21.387 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.customer_customer_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.393 -05 [12304] ERROR:  la relación «customer» ya existe
+2024-06-22 13:06:21.393 -05 [12304] SENTENCIA:  CREATE TABLE public.customer (
+	    customer_id integer DEFAULT nextval('public.customer_customer_id_seq'::regclass) NOT NULL,
+	    store_id smallint NOT NULL,
+	    first_name character varying(45) NOT NULL,
+	    last_name character varying(45) NOT NULL,
+	    email character varying(50),
+	    address_id smallint NOT NULL,
+	    activebool boolean DEFAULT true NOT NULL,
+	    create_date date DEFAULT ('now'::text)::date NOT NULL,
+	    last_update timestamp without time zone DEFAULT now(),
+	    active integer
+	);
+	
+	
+	
+2024-06-22 13:06:21.406 -05 [12304] ERROR:  ya existe una función «rewards_report» con los mismos argumentos
+2024-06-22 13:06:21.406 -05 [12304] SENTENCIA:  CREATE FUNCTION public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric) RETURNS SETOF public.customer
+	    LANGUAGE plpgsql SECURITY DEFINER
+	    AS $_$
+	DECLARE
+	    last_month_start DATE;
+	    last_month_end DATE;
+	rr RECORD;
+	tmpSQL TEXT;
+	BEGIN
+	
+	    /* Some sanity checks... */
+	    IF min_monthly_purchases = 0 THEN
+	        RAISE EXCEPTION 'Minimum monthly purchases parameter must be > 0';
+	    END IF;
+	    IF min_dollar_amount_purchased = 0.00 THEN
+	        RAISE EXCEPTION 'Minimum monthly dollar amount purchased parameter must be > $0.00';
+	    END IF;
+	
+	    last_month_start := CURRENT_DATE - '3 month'::interval;
+	    last_month_start := to_date((extract(YEAR FROM last_month_start) || '-' || extract(MONTH FROM last_month_start) || '-01'),'YYYY-MM-DD');
+	    last_month_end := LAST_DAY(last_month_start);
+	
+	    /*
+	    Create a temporary storage area for Customer IDs.
+	    */
+	    CREATE TEMPORARY TABLE tmpCustomer (customer_id INTEGER NOT NULL PRIMARY KEY);
+	
+	    /*
+	    Find all customers meeting the monthly purchase requirements
+	    */
+	
+	    tmpSQL := 'INSERT INTO tmpCustomer (customer_id)
+	        SELECT p.customer_id
+	        FROM payment AS p
+	        WHERE DATE(p.payment_date) BETWEEN '||quote_literal(last_month_start) ||' AND '|| quote_literal(last_month_end) || '
+	        GROUP BY customer_id
+	        HAVING SUM(p.amount) > '|| min_dollar_amount_purchased || '
+	        AND COUNT(customer_id) > ' ||min_monthly_purchases ;
+	
+	    EXECUTE tmpSQL;
+	
+	    /*
+	    Output ALL customer information of matching rewardees.
+	    Customize output as needed.
+	    */
+	    FOR rr IN EXECUTE 'SELECT c.* FROM tmpCustomer AS t INNER JOIN customer AS c ON t.customer_id = c.customer_id' LOOP
+	        RETURN NEXT rr;
+	    END LOOP;
+	
+	    /* Clean up */
+	    tmpSQL := 'DROP TABLE tmpCustomer';
+	    EXECUTE tmpSQL;
+	
+	RETURN;
+	END
+	$_$;
+	
+	
+	
+2024-06-22 13:06:21.449 -05 [12304] ERROR:  ya existe una función «group_concat» con los mismos argumentos
+2024-06-22 13:06:21.449 -05 [12304] SENTENCIA:  CREATE AGGREGATE public.group_concat(text) (
+	    SFUNC = public._group_concat,
+	    STYPE = text
+	);
+	
+	
+	
+2024-06-22 13:06:21.455 -05 [12304] ERROR:  la relación «actor_actor_id_seq» ya existe
+2024-06-22 13:06:21.455 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.actor_actor_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.460 -05 [12304] ERROR:  la relación «actor» ya existe
+2024-06-22 13:06:21.460 -05 [12304] SENTENCIA:  CREATE TABLE public.actor (
+	    actor_id integer DEFAULT nextval('public.actor_actor_id_seq'::regclass) NOT NULL,
+	    first_name character varying(45) NOT NULL,
+	    last_name character varying(45) NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.469 -05 [12304] ERROR:  la relación «category_category_id_seq» ya existe
+2024-06-22 13:06:21.469 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.category_category_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.475 -05 [12304] ERROR:  la relación «category» ya existe
+2024-06-22 13:06:21.475 -05 [12304] SENTENCIA:  CREATE TABLE public.category (
+	    category_id integer DEFAULT nextval('public.category_category_id_seq'::regclass) NOT NULL,
+	    name character varying(25) NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.483 -05 [12304] ERROR:  la relación «film_film_id_seq» ya existe
+2024-06-22 13:06:21.483 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.film_film_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.489 -05 [12304] ERROR:  la relación «film» ya existe
+2024-06-22 13:06:21.489 -05 [12304] SENTENCIA:  CREATE TABLE public.film (
+	    film_id integer DEFAULT nextval('public.film_film_id_seq'::regclass) NOT NULL,
+	    title character varying(255) NOT NULL,
+	    description text,
+	    release_year public.year,
+	    language_id smallint NOT NULL,
+	    rental_duration smallint DEFAULT 3 NOT NULL,
+	    rental_rate numeric(4,2) DEFAULT 4.99 NOT NULL,
+	    length smallint,
+	    replacement_cost numeric(5,2) DEFAULT 19.99 NOT NULL,
+	    rating public.mpaa_rating DEFAULT 'G'::public.mpaa_rating,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL,
+	    special_features text[],
+	    fulltext tsvector NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.503 -05 [12304] ERROR:  la relación «film_actor» ya existe
+2024-06-22 13:06:21.503 -05 [12304] SENTENCIA:  CREATE TABLE public.film_actor (
+	    actor_id smallint NOT NULL,
+	    film_id smallint NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.511 -05 [12304] ERROR:  la relación «film_category» ya existe
+2024-06-22 13:06:21.511 -05 [12304] SENTENCIA:  CREATE TABLE public.film_category (
+	    film_id smallint NOT NULL,
+	    category_id smallint NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.517 -05 [12304] ERROR:  la relación «actor_info» ya existe
+2024-06-22 13:06:21.517 -05 [12304] SENTENCIA:  CREATE VIEW public.actor_info AS
+	 SELECT a.actor_id,
+	    a.first_name,
+	    a.last_name,
+	    public.group_concat(DISTINCT (((c.name)::text || ': '::text) || ( SELECT public.group_concat((f.title)::text) AS group_concat
+	           FROM ((public.film f
+	             JOIN public.film_category fc_1 ON ((f.film_id = fc_1.film_id)))
+	             JOIN public.film_actor fa_1 ON ((f.film_id = fa_1.film_id)))
+	          WHERE ((fc_1.category_id = c.category_id) AND (fa_1.actor_id = a.actor_id))
+	          GROUP BY fa_1.actor_id))) AS film_info
+	   FROM (((public.actor a
+	     LEFT JOIN public.film_actor fa ON ((a.actor_id = fa.actor_id)))
+	     LEFT JOIN public.film_category fc ON ((fa.film_id = fc.film_id)))
+	     LEFT JOIN public.category c ON ((fc.category_id = c.category_id)))
+	  GROUP BY a.actor_id, a.first_name, a.last_name;
+	
+	
+	
+2024-06-22 13:06:21.536 -05 [12304] ERROR:  la relación «address_address_id_seq» ya existe
+2024-06-22 13:06:21.536 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.address_address_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.543 -05 [12304] ERROR:  la relación «address» ya existe
+2024-06-22 13:06:21.543 -05 [12304] SENTENCIA:  CREATE TABLE public.address (
+	    address_id integer DEFAULT nextval('public.address_address_id_seq'::regclass) NOT NULL,
+	    address character varying(50) NOT NULL,
+	    address2 character varying(50),
+	    district character varying(20) NOT NULL,
+	    city_id smallint NOT NULL,
+	    postal_code character varying(10),
+	    phone character varying(20) NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.554 -05 [12304] ERROR:  la relación «city_city_id_seq» ya existe
+2024-06-22 13:06:21.554 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.city_city_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.561 -05 [12304] ERROR:  la relación «city» ya existe
+2024-06-22 13:06:21.561 -05 [12304] SENTENCIA:  CREATE TABLE public.city (
+	    city_id integer DEFAULT nextval('public.city_city_id_seq'::regclass) NOT NULL,
+	    city character varying(50) NOT NULL,
+	    country_id smallint NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.568 -05 [12304] ERROR:  la relación «country_country_id_seq» ya existe
+2024-06-22 13:06:21.568 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.country_country_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.575 -05 [12304] ERROR:  la relación «country» ya existe
+2024-06-22 13:06:21.575 -05 [12304] SENTENCIA:  CREATE TABLE public.country (
+	    country_id integer DEFAULT nextval('public.country_country_id_seq'::regclass) NOT NULL,
+	    country character varying(50) NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.582 -05 [12304] ERROR:  la relación «customer_list» ya existe
+2024-06-22 13:06:21.582 -05 [12304] SENTENCIA:  CREATE VIEW public.customer_list AS
+	 SELECT cu.customer_id AS id,
+	    (((cu.first_name)::text || ' '::text) || (cu.last_name)::text) AS name,
+	    a.address,
+	    a.postal_code AS "zip code",
+	    a.phone,
+	    city.city,
+	    country.country,
+	        CASE
+	            WHEN cu.activebool THEN 'active'::text
+	            ELSE ''::text
+	        END AS notes,
+	    cu.store_id AS sid
+	   FROM (((public.customer cu
+	     JOIN public.address a ON ((cu.address_id = a.address_id)))
+	     JOIN public.city ON ((a.city_id = city.city_id)))
+	     JOIN public.country ON ((city.country_id = country.country_id)));
+	
+	
+	
+2024-06-22 13:06:21.597 -05 [12304] ERROR:  la relación «film_list» ya existe
+2024-06-22 13:06:21.597 -05 [12304] SENTENCIA:  CREATE VIEW public.film_list AS
+	 SELECT film.film_id AS fid,
+	    film.title,
+	    film.description,
+	    category.name AS category,
+	    film.rental_rate AS price,
+	    film.length,
+	    film.rating,
+	    public.group_concat((((actor.first_name)::text || ' '::text) || (actor.last_name)::text)) AS actors
+	   FROM ((((public.category
+	     LEFT JOIN public.film_category ON ((category.category_id = film_category.category_id)))
+	     LEFT JOIN public.film ON ((film_category.film_id = film.film_id)))
+	     JOIN public.film_actor ON ((film.film_id = film_actor.film_id)))
+	     JOIN public.actor ON ((film_actor.actor_id = actor.actor_id)))
+	  GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating;
+	
+	
+	
+2024-06-22 13:06:21.615 -05 [12304] ERROR:  la relación «inventory_inventory_id_seq» ya existe
+2024-06-22 13:06:21.615 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.inventory_inventory_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.622 -05 [12304] ERROR:  la relación «inventory» ya existe
+2024-06-22 13:06:21.622 -05 [12304] SENTENCIA:  CREATE TABLE public.inventory (
+	    inventory_id integer DEFAULT nextval('public.inventory_inventory_id_seq'::regclass) NOT NULL,
+	    film_id smallint NOT NULL,
+	    store_id smallint NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.630 -05 [12304] ERROR:  la relación «language_language_id_seq» ya existe
+2024-06-22 13:06:21.630 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.language_language_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.637 -05 [12304] ERROR:  la relación «language» ya existe
+2024-06-22 13:06:21.637 -05 [12304] SENTENCIA:  CREATE TABLE public.language (
+	    language_id integer DEFAULT nextval('public.language_language_id_seq'::regclass) NOT NULL,
+	    name character(20) NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.644 -05 [12304] ERROR:  la relación «nicer_but_slower_film_list» ya existe
+2024-06-22 13:06:21.644 -05 [12304] SENTENCIA:  CREATE VIEW public.nicer_but_slower_film_list AS
+	 SELECT film.film_id AS fid,
+	    film.title,
+	    film.description,
+	    category.name AS category,
+	    film.rental_rate AS price,
+	    film.length,
+	    film.rating,
+	    public.group_concat((((upper("substring"((actor.first_name)::text, 1, 1)) || lower("substring"((actor.first_name)::text, 2))) || upper("substring"((actor.last_name)::text, 1, 1))) || lower("substring"((actor.last_name)::text, 2)))) AS actors
+	   FROM ((((public.category
+	     LEFT JOIN public.film_category ON ((category.category_id = film_category.category_id)))
+	     LEFT JOIN public.film ON ((film_category.film_id = film.film_id)))
+	     JOIN public.film_actor ON ((film.film_id = film_actor.film_id)))
+	     JOIN public.actor ON ((film_actor.actor_id = actor.actor_id)))
+	  GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating;
+	
+	
+	
+2024-06-22 13:06:21.666 -05 [12304] ERROR:  la relación «payment_payment_id_seq» ya existe
+2024-06-22 13:06:21.666 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.payment_payment_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.672 -05 [12304] ERROR:  la relación «payment» ya existe
+2024-06-22 13:06:21.672 -05 [12304] SENTENCIA:  CREATE TABLE public.payment (
+	    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+	    customer_id smallint NOT NULL,
+	    staff_id smallint NOT NULL,
+	    rental_id integer NOT NULL,
+	    amount numeric(5,2) NOT NULL,
+	    payment_date timestamp without time zone NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.681 -05 [12304] ERROR:  la relación «rental_rental_id_seq» ya existe
+2024-06-22 13:06:21.681 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.rental_rental_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.687 -05 [12304] ERROR:  la relación «rental» ya existe
+2024-06-22 13:06:21.687 -05 [12304] SENTENCIA:  CREATE TABLE public.rental (
+	    rental_id integer DEFAULT nextval('public.rental_rental_id_seq'::regclass) NOT NULL,
+	    rental_date timestamp without time zone NOT NULL,
+	    inventory_id integer NOT NULL,
+	    customer_id smallint NOT NULL,
+	    return_date timestamp without time zone,
+	    staff_id smallint NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.698 -05 [12304] ERROR:  la relación «sales_by_film_category» ya existe
+2024-06-22 13:06:21.698 -05 [12304] SENTENCIA:  CREATE VIEW public.sales_by_film_category AS
+	 SELECT c.name AS category,
+	    sum(p.amount) AS total_sales
+	   FROM (((((public.payment p
+	     JOIN public.rental r ON ((p.rental_id = r.rental_id)))
+	     JOIN public.inventory i ON ((r.inventory_id = i.inventory_id)))
+	     JOIN public.film f ON ((i.film_id = f.film_id)))
+	     JOIN public.film_category fc ON ((f.film_id = fc.film_id)))
+	     JOIN public.category c ON ((fc.category_id = c.category_id)))
+	  GROUP BY c.name
+	  ORDER BY (sum(p.amount)) DESC;
+	
+	
+	
+2024-06-22 13:06:21.713 -05 [12304] ERROR:  la relación «staff_staff_id_seq» ya existe
+2024-06-22 13:06:21.713 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.staff_staff_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.719 -05 [12304] ERROR:  la relación «staff» ya existe
+2024-06-22 13:06:21.719 -05 [12304] SENTENCIA:  CREATE TABLE public.staff (
+	    staff_id integer DEFAULT nextval('public.staff_staff_id_seq'::regclass) NOT NULL,
+	    first_name character varying(45) NOT NULL,
+	    last_name character varying(45) NOT NULL,
+	    address_id smallint NOT NULL,
+	    email character varying(50),
+	    store_id smallint NOT NULL,
+	    active boolean DEFAULT true NOT NULL,
+	    username character varying(16) NOT NULL,
+	    password character varying(40),
+	    last_update timestamp without time zone DEFAULT now() NOT NULL,
+	    picture bytea
+	);
+	
+	
+	
+2024-06-22 13:06:21.734 -05 [12304] ERROR:  la relación «store_store_id_seq» ya existe
+2024-06-22 13:06:21.734 -05 [12304] SENTENCIA:  CREATE SEQUENCE public.store_store_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-22 13:06:21.740 -05 [12304] ERROR:  la relación «store» ya existe
+2024-06-22 13:06:21.740 -05 [12304] SENTENCIA:  CREATE TABLE public.store (
+	    store_id integer DEFAULT nextval('public.store_store_id_seq'::regclass) NOT NULL,
+	    manager_staff_id smallint NOT NULL,
+	    address_id smallint NOT NULL,
+	    last_update timestamp without time zone DEFAULT now() NOT NULL
+	);
+	
+	
+	
+2024-06-22 13:06:21.749 -05 [12304] ERROR:  la relación «sales_by_store» ya existe
+2024-06-22 13:06:21.749 -05 [12304] SENTENCIA:  CREATE VIEW public.sales_by_store AS
+	 SELECT (((c.city)::text || ','::text) || (cy.country)::text) AS store,
+	    (((m.first_name)::text || ' '::text) || (m.last_name)::text) AS manager,
+	    sum(p.amount) AS total_sales
+	   FROM (((((((public.payment p
+	     JOIN public.rental r ON ((p.rental_id = r.rental_id)))
+	     JOIN public.inventory i ON ((r.inventory_id = i.inventory_id)))
+	     JOIN public.store s ON ((i.store_id = s.store_id)))
+	     JOIN public.address a ON ((s.address_id = a.address_id)))
+	     JOIN public.city c ON ((a.city_id = c.city_id)))
+	     JOIN public.country cy ON ((c.country_id = cy.country_id)))
+	     JOIN public.staff m ON ((s.manager_staff_id = m.staff_id)))
+	  GROUP BY cy.country, c.city, s.store_id, m.first_name, m.last_name
+	  ORDER BY cy.country, c.city;
+	
+	
+	
+2024-06-22 13:06:21.768 -05 [12304] ERROR:  la relación «staff_list» ya existe
+2024-06-22 13:06:21.768 -05 [12304] SENTENCIA:  CREATE VIEW public.staff_list AS
+	 SELECT s.staff_id AS id,
+	    (((s.first_name)::text || ' '::text) || (s.last_name)::text) AS name,
+	    a.address,
+	    a.postal_code AS "zip code",
+	    a.phone,
+	    city.city,
+	    country.country,
+	    s.store_id AS sid
+	   FROM (((public.staff s
+	     JOIN public.address a ON ((s.address_id = a.address_id)))
+	     JOIN public.city ON ((a.city_id = city.city_id)))
+	     JOIN public.country ON ((city.country_id = country.country_id)));
+	
+	
+	
+2024-06-22 13:06:21.782 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «actor_pkey»
+2024-06-22 13:06:21.782 -05 [12304] DETALLE:  Ya existe la llave (actor_id)=(1).
+2024-06-22 13:06:21.782 -05 [12304] CONTEXTO:  COPY actor, line 1
+2024-06-22 13:06:21.782 -05 [12304] SENTENCIA:  COPY public.actor (actor_id, first_name, last_name, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.789 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «address_pkey»
+2024-06-22 13:06:21.789 -05 [12304] DETALLE:  Ya existe la llave (address_id)=(1).
+2024-06-22 13:06:21.789 -05 [12304] CONTEXTO:  COPY address, line 1
+2024-06-22 13:06:21.789 -05 [12304] SENTENCIA:  COPY public.address (address_id, address, address2, district, city_id, postal_code, phone, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.796 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «category_pkey»
+2024-06-22 13:06:21.796 -05 [12304] DETALLE:  Ya existe la llave (category_id)=(1).
+2024-06-22 13:06:21.796 -05 [12304] CONTEXTO:  COPY category, line 1
+2024-06-22 13:06:21.796 -05 [12304] SENTENCIA:  COPY public.category (category_id, name, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.804 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «city_pkey»
+2024-06-22 13:06:21.804 -05 [12304] DETALLE:  Ya existe la llave (city_id)=(1).
+2024-06-22 13:06:21.804 -05 [12304] CONTEXTO:  COPY city, line 1
+2024-06-22 13:06:21.804 -05 [12304] SENTENCIA:  COPY public.city (city_id, city, country_id, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.811 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «country_pkey»
+2024-06-22 13:06:21.811 -05 [12304] DETALLE:  Ya existe la llave (country_id)=(1).
+2024-06-22 13:06:21.811 -05 [12304] CONTEXTO:  COPY country, line 1
+2024-06-22 13:06:21.811 -05 [12304] SENTENCIA:  COPY public.country (country_id, country, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.820 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «customer_pkey»
+2024-06-22 13:06:21.820 -05 [12304] DETALLE:  Ya existe la llave (customer_id)=(524).
+2024-06-22 13:06:21.820 -05 [12304] CONTEXTO:  COPY customer, line 1
+2024-06-22 13:06:21.820 -05 [12304] SENTENCIA:  COPY public.customer (customer_id, store_id, first_name, last_name, email, address_id, activebool, create_date, last_update, active) FROM stdin;
+	
+2024-06-22 13:06:21.829 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «film_pkey»
+2024-06-22 13:06:21.829 -05 [12304] DETALLE:  Ya existe la llave (film_id)=(133).
+2024-06-22 13:06:21.829 -05 [12304] CONTEXTO:  COPY film, line 1: "133	Chamber Italian	A Fateful Reflection of a Moose And a Husband who must Overcome a Monkey in Nige..."
+2024-06-22 13:06:21.829 -05 [12304] SENTENCIA:  COPY public.film (film_id, title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext) FROM stdin;
+	
+2024-06-22 13:06:21.841 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «film_actor_pkey»
+2024-06-22 13:06:21.841 -05 [12304] DETALLE:  Ya existe la llave (actor_id, film_id)=(1, 1).
+2024-06-22 13:06:21.841 -05 [12304] CONTEXTO:  COPY film_actor, line 1
+2024-06-22 13:06:21.841 -05 [12304] SENTENCIA:  COPY public.film_actor (actor_id, film_id, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.850 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «film_category_pkey»
+2024-06-22 13:06:21.850 -05 [12304] DETALLE:  Ya existe la llave (film_id, category_id)=(1, 6).
+2024-06-22 13:06:21.850 -05 [12304] CONTEXTO:  COPY film_category, line 1
+2024-06-22 13:06:21.850 -05 [12304] SENTENCIA:  COPY public.film_category (film_id, category_id, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.859 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «inventory_pkey»
+2024-06-22 13:06:21.859 -05 [12304] DETALLE:  Ya existe la llave (inventory_id)=(1).
+2024-06-22 13:06:21.859 -05 [12304] CONTEXTO:  COPY inventory, line 1
+2024-06-22 13:06:21.859 -05 [12304] SENTENCIA:  COPY public.inventory (inventory_id, film_id, store_id, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.866 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «language_pkey»
+2024-06-22 13:06:21.866 -05 [12304] DETALLE:  Ya existe la llave (language_id)=(1).
+2024-06-22 13:06:21.866 -05 [12304] CONTEXTO:  COPY language, line 1
+2024-06-22 13:06:21.866 -05 [12304] SENTENCIA:  COPY public.language (language_id, name, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.878 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «payment_pkey»
+2024-06-22 13:06:21.878 -05 [12304] DETALLE:  Ya existe la llave (payment_id)=(17503).
+2024-06-22 13:06:21.878 -05 [12304] CONTEXTO:  COPY payment, line 1
+2024-06-22 13:06:21.878 -05 [12304] SENTENCIA:  COPY public.payment (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
+	
+2024-06-22 13:06:21.891 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «rental_pkey»
+2024-06-22 13:06:21.891 -05 [12304] DETALLE:  Ya existe la llave (rental_id)=(2).
+2024-06-22 13:06:21.891 -05 [12304] CONTEXTO:  COPY rental, line 1
+2024-06-22 13:06:21.891 -05 [12304] SENTENCIA:  COPY public.rental (rental_id, rental_date, inventory_id, customer_id, return_date, staff_id, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.897 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «staff_pkey»
+2024-06-22 13:06:21.897 -05 [12304] DETALLE:  Ya existe la llave (staff_id)=(1).
+2024-06-22 13:06:21.897 -05 [12304] CONTEXTO:  COPY staff, line 1
+2024-06-22 13:06:21.897 -05 [12304] SENTENCIA:  COPY public.staff (staff_id, first_name, last_name, address_id, email, store_id, active, username, password, last_update, picture) FROM stdin;
+	
+2024-06-22 13:06:21.904 -05 [12304] ERROR:  llave duplicada viola restricción de unicidad «store_pkey»
+2024-06-22 13:06:21.904 -05 [12304] DETALLE:  Ya existe la llave (store_id)=(1).
+2024-06-22 13:06:21.904 -05 [12304] CONTEXTO:  COPY store, line 1
+2024-06-22 13:06:21.904 -05 [12304] SENTENCIA:  COPY public.store (store_id, manager_staff_id, address_id, last_update) FROM stdin;
+	
+2024-06-22 13:06:21.912 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «actor»
+2024-06-22 13:06:21.912 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.actor
+	    ADD CONSTRAINT actor_pkey PRIMARY KEY (actor_id);
+	
+	
+	
+2024-06-22 13:06:21.919 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «address»
+2024-06-22 13:06:21.919 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.address
+	    ADD CONSTRAINT address_pkey PRIMARY KEY (address_id);
+	
+	
+	
+2024-06-22 13:06:21.925 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «category»
+2024-06-22 13:06:21.925 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.category
+	    ADD CONSTRAINT category_pkey PRIMARY KEY (category_id);
+	
+	
+	
+2024-06-22 13:06:21.933 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «city»
+2024-06-22 13:06:21.933 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.city
+	    ADD CONSTRAINT city_pkey PRIMARY KEY (city_id);
+	
+	
+	
+2024-06-22 13:06:21.939 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «country»
+2024-06-22 13:06:21.939 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.country
+	    ADD CONSTRAINT country_pkey PRIMARY KEY (country_id);
+	
+	
+	
+2024-06-22 13:06:21.946 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «customer»
+2024-06-22 13:06:21.946 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.customer
+	    ADD CONSTRAINT customer_pkey PRIMARY KEY (customer_id);
+	
+	
+	
+2024-06-22 13:06:21.951 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «film_actor»
+2024-06-22 13:06:21.951 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.film_actor
+	    ADD CONSTRAINT film_actor_pkey PRIMARY KEY (actor_id, film_id);
+	
+	
+	
+2024-06-22 13:06:21.957 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «film_category»
+2024-06-22 13:06:21.957 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.film_category
+	    ADD CONSTRAINT film_category_pkey PRIMARY KEY (film_id, category_id);
+	
+	
+	
+2024-06-22 13:06:21.964 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «film»
+2024-06-22 13:06:21.964 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.film
+	    ADD CONSTRAINT film_pkey PRIMARY KEY (film_id);
+	
+	
+	
+2024-06-22 13:06:21.968 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «inventory»
+2024-06-22 13:06:21.968 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.inventory
+	    ADD CONSTRAINT inventory_pkey PRIMARY KEY (inventory_id);
+	
+	
+	
+2024-06-22 13:06:21.973 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «language»
+2024-06-22 13:06:21.973 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.language
+	    ADD CONSTRAINT language_pkey PRIMARY KEY (language_id);
+	
+	
+	
+2024-06-22 13:06:21.979 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «payment»
+2024-06-22 13:06:21.979 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.payment
+	    ADD CONSTRAINT payment_pkey PRIMARY KEY (payment_id);
+	
+	
+	
+2024-06-22 13:06:21.984 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «rental»
+2024-06-22 13:06:21.984 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.rental
+	    ADD CONSTRAINT rental_pkey PRIMARY KEY (rental_id);
+	
+	
+	
+2024-06-22 13:06:21.989 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «staff»
+2024-06-22 13:06:21.989 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.staff
+	    ADD CONSTRAINT staff_pkey PRIMARY KEY (staff_id);
+	
+	
+	
+2024-06-22 13:06:21.995 -05 [12304] ERROR:  no se permiten múltiples llaves primarias para la tabla «store»
+2024-06-22 13:06:21.995 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.store
+	    ADD CONSTRAINT store_pkey PRIMARY KEY (store_id);
+	
+	
+	
+2024-06-22 13:06:22.000 -05 [12304] ERROR:  la relación «film_fulltext_idx» ya existe
+2024-06-22 13:06:22.000 -05 [12304] SENTENCIA:  CREATE INDEX film_fulltext_idx ON public.film USING gist (fulltext);
+	
+	
+	
+2024-06-22 13:06:22.004 -05 [12304] ERROR:  la relación «idx_actor_last_name» ya existe
+2024-06-22 13:06:22.004 -05 [12304] SENTENCIA:  CREATE INDEX idx_actor_last_name ON public.actor USING btree (last_name);
+	
+	
+	
+2024-06-22 13:06:22.009 -05 [12304] ERROR:  la relación «idx_fk_address_id» ya existe
+2024-06-22 13:06:22.009 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_address_id ON public.customer USING btree (address_id);
+	
+	
+	
+2024-06-22 13:06:22.013 -05 [12304] ERROR:  la relación «idx_fk_city_id» ya existe
+2024-06-22 13:06:22.013 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_city_id ON public.address USING btree (city_id);
+	
+	
+	
+2024-06-22 13:06:22.017 -05 [12304] ERROR:  la relación «idx_fk_country_id» ya existe
+2024-06-22 13:06:22.017 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_country_id ON public.city USING btree (country_id);
+	
+	
+	
+2024-06-22 13:06:22.021 -05 [12304] ERROR:  la relación «idx_fk_customer_id» ya existe
+2024-06-22 13:06:22.021 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_customer_id ON public.payment USING btree (customer_id);
+	
+	
+	
+2024-06-22 13:06:22.026 -05 [12304] ERROR:  la relación «idx_fk_film_id» ya existe
+2024-06-22 13:06:22.026 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_film_id ON public.film_actor USING btree (film_id);
+	
+	
+	
+2024-06-22 13:06:22.030 -05 [12304] ERROR:  la relación «idx_fk_inventory_id» ya existe
+2024-06-22 13:06:22.030 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_inventory_id ON public.rental USING btree (inventory_id);
+	
+	
+	
+2024-06-22 13:06:22.034 -05 [12304] ERROR:  la relación «idx_fk_language_id» ya existe
+2024-06-22 13:06:22.034 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_language_id ON public.film USING btree (language_id);
+	
+	
+	
+2024-06-22 13:06:22.038 -05 [12304] ERROR:  la relación «idx_fk_rental_id» ya existe
+2024-06-22 13:06:22.038 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_rental_id ON public.payment USING btree (rental_id);
+	
+	
+	
+2024-06-22 13:06:22.043 -05 [12304] ERROR:  la relación «idx_fk_staff_id» ya existe
+2024-06-22 13:06:22.043 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_staff_id ON public.payment USING btree (staff_id);
+	
+	
+	
+2024-06-22 13:06:22.047 -05 [12304] ERROR:  la relación «idx_fk_store_id» ya existe
+2024-06-22 13:06:22.047 -05 [12304] SENTENCIA:  CREATE INDEX idx_fk_store_id ON public.customer USING btree (store_id);
+	
+	
+	
+2024-06-22 13:06:22.050 -05 [12304] ERROR:  la relación «idx_last_name» ya existe
+2024-06-22 13:06:22.050 -05 [12304] SENTENCIA:  CREATE INDEX idx_last_name ON public.customer USING btree (last_name);
+	
+	
+	
+2024-06-22 13:06:22.055 -05 [12304] ERROR:  la relación «idx_store_id_film_id» ya existe
+2024-06-22 13:06:22.055 -05 [12304] SENTENCIA:  CREATE INDEX idx_store_id_film_id ON public.inventory USING btree (store_id, film_id);
+	
+	
+	
+2024-06-22 13:06:22.060 -05 [12304] ERROR:  la relación «idx_title» ya existe
+2024-06-22 13:06:22.060 -05 [12304] SENTENCIA:  CREATE INDEX idx_title ON public.film USING btree (title);
+	
+	
+	
+2024-06-22 13:06:22.064 -05 [12304] ERROR:  la relación «idx_unq_manager_staff_id» ya existe
+2024-06-22 13:06:22.064 -05 [12304] SENTENCIA:  CREATE UNIQUE INDEX idx_unq_manager_staff_id ON public.store USING btree (manager_staff_id);
+	
+	
+	
+2024-06-22 13:06:22.069 -05 [12304] ERROR:  la relación «idx_unq_rental_rental_date_inventory_id_customer_id» ya existe
+2024-06-22 13:06:22.069 -05 [12304] SENTENCIA:  CREATE UNIQUE INDEX idx_unq_rental_rental_date_inventory_id_customer_id ON public.rental USING btree (rental_date, inventory_id, customer_id);
+	
+	
+	
+2024-06-22 13:06:22.076 -05 [12304] ERROR:  ya existe un trigger «film_fulltext_trigger» para la relación «film»
+2024-06-22 13:06:22.076 -05 [12304] SENTENCIA:  CREATE TRIGGER film_fulltext_trigger BEFORE INSERT OR UPDATE ON public.film FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('fulltext', 'pg_catalog.english', 'title', 'description');
+	
+	
+	
+2024-06-22 13:06:22.083 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «actor»
+2024-06-22 13:06:22.083 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.actor FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.089 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «address»
+2024-06-22 13:06:22.089 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.address FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.095 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «category»
+2024-06-22 13:06:22.095 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.category FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.100 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «city»
+2024-06-22 13:06:22.100 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.city FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.106 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «country»
+2024-06-22 13:06:22.106 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.country FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.111 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «customer»
+2024-06-22 13:06:22.111 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.customer FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.117 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «film»
+2024-06-22 13:06:22.117 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.film FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.122 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «film_actor»
+2024-06-22 13:06:22.122 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.film_actor FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.127 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «film_category»
+2024-06-22 13:06:22.127 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.film_category FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.133 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «inventory»
+2024-06-22 13:06:22.133 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.inventory FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.139 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «language»
+2024-06-22 13:06:22.139 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.language FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.144 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «rental»
+2024-06-22 13:06:22.144 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.rental FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.149 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «staff»
+2024-06-22 13:06:22.149 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.staff FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.154 -05 [12304] ERROR:  ya existe un trigger «last_updated» para la relación «store»
+2024-06-22 13:06:22.154 -05 [12304] SENTENCIA:  CREATE TRIGGER last_updated BEFORE UPDATE ON public.store FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+	
+	
+	
+2024-06-22 13:06:22.159 -05 [12304] ERROR:  la restricción «customer_address_id_fkey» para la relación «customer» ya existe
+2024-06-22 13:06:22.159 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.customer
+	    ADD CONSTRAINT customer_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.address(address_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.167 -05 [12304] ERROR:  la restricción «film_actor_actor_id_fkey» para la relación «film_actor» ya existe
+2024-06-22 13:06:22.167 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.film_actor
+	    ADD CONSTRAINT film_actor_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES public.actor(actor_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.173 -05 [12304] ERROR:  la restricción «film_actor_film_id_fkey» para la relación «film_actor» ya existe
+2024-06-22 13:06:22.173 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.film_actor
+	    ADD CONSTRAINT film_actor_film_id_fkey FOREIGN KEY (film_id) REFERENCES public.film(film_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.181 -05 [12304] ERROR:  la restricción «film_category_category_id_fkey» para la relación «film_category» ya existe
+2024-06-22 13:06:22.181 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.film_category
+	    ADD CONSTRAINT film_category_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.category(category_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.188 -05 [12304] ERROR:  la restricción «film_category_film_id_fkey» para la relación «film_category» ya existe
+2024-06-22 13:06:22.188 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.film_category
+	    ADD CONSTRAINT film_category_film_id_fkey FOREIGN KEY (film_id) REFERENCES public.film(film_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.195 -05 [12304] ERROR:  la restricción «film_language_id_fkey» para la relación «film» ya existe
+2024-06-22 13:06:22.195 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.film
+	    ADD CONSTRAINT film_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.language(language_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.202 -05 [12304] ERROR:  la restricción «fk_address_city» para la relación «address» ya existe
+2024-06-22 13:06:22.202 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.address
+	    ADD CONSTRAINT fk_address_city FOREIGN KEY (city_id) REFERENCES public.city(city_id);
+	
+	
+	
+2024-06-22 13:06:22.208 -05 [12304] ERROR:  la restricción «fk_city» para la relación «city» ya existe
+2024-06-22 13:06:22.208 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.city
+	    ADD CONSTRAINT fk_city FOREIGN KEY (country_id) REFERENCES public.country(country_id);
+	
+	
+	
+2024-06-22 13:06:22.215 -05 [12304] ERROR:  la restricción «inventory_film_id_fkey» para la relación «inventory» ya existe
+2024-06-22 13:06:22.215 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.inventory
+	    ADD CONSTRAINT inventory_film_id_fkey FOREIGN KEY (film_id) REFERENCES public.film(film_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.225 -05 [12304] ERROR:  la restricción «payment_customer_id_fkey» para la relación «payment» ya existe
+2024-06-22 13:06:22.225 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.payment
+	    ADD CONSTRAINT payment_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customer(customer_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.233 -05 [12304] ERROR:  la restricción «payment_rental_id_fkey» para la relación «payment» ya existe
+2024-06-22 13:06:22.233 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.payment
+	    ADD CONSTRAINT payment_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES public.rental(rental_id) ON UPDATE CASCADE ON DELETE SET NULL;
+	
+	
+	
+2024-06-22 13:06:22.243 -05 [12304] ERROR:  la restricción «payment_staff_id_fkey» para la relación «payment» ya existe
+2024-06-22 13:06:22.243 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.payment
+	    ADD CONSTRAINT payment_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES public.staff(staff_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.251 -05 [12304] ERROR:  la restricción «rental_customer_id_fkey» para la relación «rental» ya existe
+2024-06-22 13:06:22.251 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.rental
+	    ADD CONSTRAINT rental_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customer(customer_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.258 -05 [12304] ERROR:  la restricción «rental_inventory_id_fkey» para la relación «rental» ya existe
+2024-06-22 13:06:22.258 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.rental
+	    ADD CONSTRAINT rental_inventory_id_fkey FOREIGN KEY (inventory_id) REFERENCES public.inventory(inventory_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.265 -05 [12304] ERROR:  la restricción «rental_staff_id_key» para la relación «rental» ya existe
+2024-06-22 13:06:22.265 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.rental
+	    ADD CONSTRAINT rental_staff_id_key FOREIGN KEY (staff_id) REFERENCES public.staff(staff_id);
+	
+	
+	
+2024-06-22 13:06:22.271 -05 [12304] ERROR:  la restricción «staff_address_id_fkey» para la relación «staff» ya existe
+2024-06-22 13:06:22.271 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.staff
+	    ADD CONSTRAINT staff_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.address(address_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.279 -05 [12304] ERROR:  la restricción «store_address_id_fkey» para la relación «store» ya existe
+2024-06-22 13:06:22.279 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.store
+	    ADD CONSTRAINT store_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.address(address_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:06:22.285 -05 [12304] ERROR:  la restricción «store_manager_staff_id_fkey» para la relación «store» ya existe
+2024-06-22 13:06:22.285 -05 [12304] SENTENCIA:  ALTER TABLE ONLY public.store
+	    ADD CONSTRAINT store_manager_staff_id_fkey FOREIGN KEY (manager_staff_id) REFERENCES public.staff(staff_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+	
+	
+	
+2024-06-22 13:08:32.131 -05 [7580] LOG:  checkpoint complete: wrote 1468 buffers (9.0%); 1 WAL file(s) added, 0 removed, 0 recycled; write=158.970 s, sync=0.144 s, total=159.179 s; sync files=387, longest=0.004 s, average=0.001 s; distance=9760 kB, estimate=9760 kB; lsn=0/1FA9628, redo lsn=0/1F3B2D0
+2024-06-22 14:02:51.332 -05 [26260] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-06-22 14:05:52.240 -05 [7580] LOG:  empezando checkpoint: time
+2024-06-22 14:07:42.946 -05 [7580] LOG:  checkpoint complete: wrote 1018 buffers (6.2%); 0 WAL file(s) added, 0 removed, 1 recycled; write=110.564 s, sync=0.126 s, total=110.707 s; sync files=319, longest=0.007 s, average=0.001 s; distance=4989 kB, estimate=9283 kB; lsn=0/241A920, redo lsn=0/241A8E8
+2024-06-22 15:21:24.066 -05 [23260] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-06-22 15:22:09.183 -05 [7580] LOG:  empezando checkpoint: time
+2024-06-22 15:22:15.297 -05 [7580] LOG:  checkpoint complete: wrote 57 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=6.089 s, sync=0.019 s, total=6.115 s; sync files=42, longest=0.002 s, average=0.001 s; distance=180 kB, estimate=8373 kB; lsn=0/2447D18, redo lsn=0/2447CE0
+2024-06-22 15:23:24.799 -05 [25880] ERROR:  error de sintaxis en o cerca de «select» en carácter 21
+2024-06-22 15:23:24.799 -05 [25880] SENTENCIA:  select * from users
+	select * from users
+	select * from users
+	cd..
+	select * from users
+	d
+	select * from users
+	select * from users;
+2024-06-22 15:27:03.936 -05 [1216] ERROR:  el valor nulo en la columna «createdAt» de la relación «users» viola la restricción de no nulo
+2024-06-22 15:27:03.936 -05 [1216] DETALLE:  La fila que falla contiene (0, John Doe, null, null).
+2024-06-22 15:27:03.936 -05 [1216] SENTENCIA:  INSERT INTO "users" ("id","nombre") VALUES (0,'John Doe');
+2024-06-22 15:27:03.943 -05 [1216] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-06-22 15:27:09.304 -05 [7580] LOG:  empezando checkpoint: time
+2024-06-22 15:27:09.963 -05 [7580] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.651 s, sync=0.004 s, total=0.660 s; sync files=5, longest=0.002 s, average=0.001 s; distance=8 kB, estimate=7536 kB; lsn=0/2449DE0, redo lsn=0/2449DA8
+2024-06-22 15:28:42.987 -05 [23876] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-06-22 15:32:09.971 -05 [7580] LOG:  empezando checkpoint: time
+2024-06-22 15:32:10.301 -05 [7580] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.321 s, sync=0.003 s, total=0.330 s; sync files=3, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=6783 kB; lsn=0/244A038, redo lsn=0/2449FE8
+2024-06-22 15:35:07.831 -05 [14660] LOG:  proceso de servidor (PID 25880) fue terminado por una excepci�n 0xC000013A
+2024-06-22 15:35:07.831 -05 [14660] DETALLE:  El proceso que fall� estaba ejecutando: select * from users;
+2024-06-22 15:35:07.831 -05 [14660] HINT:  Vea el archivo �ntstatus.h� para una descripci�n del valor hexadecimal.
+2024-06-22 15:35:07.831 -05 [14660] LOG:  terminando todos los otros procesos de servidor activos
+2024-06-22 15:35:07.848 -05 [14660] LOG:  todos los procesos fueron terminados; reinicializando
+2024-06-22 15:35:07.887 -05 [12172] LOG:  el sistema de bases de datos fue interrumpido; �ltima vez en funcionamiento en 2024-06-22 15:32:10 -05
+2024-06-22 15:35:08.275 -05 [12172] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se est� efectuando la recuperaci�n autom�tica
+2024-06-22 15:35:08.280 -05 [12172] LOG:  redo comienza en 0/2449FE8
+2024-06-22 15:35:08.280 -05 [12172] LOG:  largo de registro no v�lido en 0/244A0E8: se esperaba al menos 24, se obtuvo 0
+2024-06-22 15:35:08.280 -05 [12172] LOG:  redo listo en 0/244A0B0 utilizaci�n del sistema: CPU: usuario: 0.00 s, sistema: 0.00 s, transcurrido: 0.00 s
+2024-06-22 15:35:08.285 -05 [24188] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-06-22 15:35:08.292 -05 [24188] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.010 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/244A0E8, redo lsn=0/244A0E8
+2024-06-22 15:35:08.303 -05 [14660] LOG:  el sistema de bases de datos est� listo para aceptar conexiones
+2024-06-22 15:35:10.443 -05 [14660] LOG:  proceso ayudante �logical replication launcher� (PID 24776) fue terminado por una excepci�n 0xC000013A
+2024-06-22 15:35:10.443 -05 [14660] HINT:  Vea el archivo �ntstatus.h� para una descripci�n del valor hexadecimal.
+2024-06-22 15:35:10.443 -05 [14660] LOG:  terminando todos los otros procesos de servidor activos
+2024-06-22 15:35:10.446 -05 [14660] LOG:  se recibi� petici�n de apagado r�pido
+^C
