@@ -1,0 +1,49 @@
+{
+    "id": 9999,
+    "name": "TU NOMBRE",
+    "height": 180,
+    "weight": 90,
+    "xp": 1000,
+    "image_url": "https://pokeres.bastionbot.org/images/pokemon/890.png",
+    "pokemon_url": "https://www.pokemon.com/us/pokedex/eternatus",
+    "abilities": [
+        {
+            "name": "stress",
+            "is_hidden": false
+        }
+    ],
+    "stats": [
+        {
+            "name": "hp",
+            "base_stat": 1
+        },
+        {
+            "name": "attack",
+            "base_stat": 1
+        },
+        {
+            "name": "defense",
+            "base_stat": 1
+        },
+        {
+            "name": "special-attack",
+            "base_stat": 1
+        },
+        {
+            "name": "special-defense",
+            "base_stat": 1
+        },
+        {
+            "name": "speed",
+            "base_stat": 1
+        }
+    ],
+    "types": [
+        {
+            "name": "alumno"
+        },
+        {
+            "name": "estudiante"
+        }
+    ]
+}
