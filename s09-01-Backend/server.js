@@ -1,11 +1,11 @@
 const express = require('express');
 const bodyParser = require("body-parser")
 const path = require('path');
+const db = require('./db/models/index.js'); //contiene toda la definicion de los modelos creados
 
 // Permitir CORS
 const cors = require('cors')
 
-// Registrar las apis
 const app = express()
 const port = 3080
 
@@ -29,3 +29,7 @@ app.listen(port, () => {
 // UUna vez creada la API para que salga toda las películas, es decir, findAll
 const peli = require('./api/peliculas/pelicula.js')
 app.use('/api/peliculas',peli)
+app.use('/api/usuarios',usuario)
+
+// Se registra la api que vamos a crear
+const usuario = require('./api/BaseDeDatos/usuario.js')
