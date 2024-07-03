@@ -1227,3 +1227,327 @@
 2024-06-24 00:29:03.034 -05 [3340] LOG:  abortando el inicio debido a una falla en el procesamiento de inicio
 ^C2024-06-24 00:29:03.039 -05 [10312] LOG:  process 10312 taking over ProcSignal slot 124, but it's not empty
 2024-06-24 00:29:03.040 -05 [8708] LOG:  process 8708 taking over ProcSignal slot 126, but it's not empty
+2024-06-27 23:36:56.213 -05 [16656] LOG:  iniciando PostgreSQL 16.3, compiled by Visual C++ build 1939, 64-bit
+2024-06-27 23:36:56.216 -05 [16656] LOG:  escuchando en la dirección IPv6 «::1», port 5432
+2024-06-27 23:36:56.216 -05 [16656] LOG:  escuchando en la dirección IPv4 «127.0.0.1», port 5432
+2024-06-27 23:36:56.249 -05 [23208] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-06-24 00:29:02 -05
+2024-06-27 23:36:56.742 -05 [23208] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-06-27 23:36:56.746 -05 [23208] LOG:  largo de registro no válido en 0/244A770: se esperaba al menos 24, se obtuvo 0
+2024-06-27 23:36:56.746 -05 [23208] LOG:  no se requiere redo
+2024-06-27 23:36:56.752 -05 [5312] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-06-27 23:36:56.762 -05 [5312] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.013 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/244A770, redo lsn=0/244A770
+2024-06-27 23:36:56.773 -05 [16656] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-06-27 23:53:44.434 -05 [5868] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-06-27 23:55:04.004 -05 [23164] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-06-27 23:55:06.158 -05 [16656] LOG:  proceso ayudante «logical replication launcher» (PID 18460) fue terminado por una excepción 0xC000013A
+2024-06-27 23:55:06.158 -05 [16656] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-06-27 23:55:06.158 -05 [16656] LOG:  terminando todos los otros procesos de servidor activos
+^C2024-06-29 18:04:40.506 -05 [1564] LOG:  iniciando PostgreSQL 16.3, compiled by Visual C++ build 1939, 64-bit
+2024-06-29 18:04:40.509 -05 [1564] LOG:  escuchando en la dirección IPv6 «::1», port 5432
+2024-06-29 18:04:40.509 -05 [1564] LOG:  escuchando en la dirección IPv4 «127.0.0.1», port 5432
+2024-06-29 18:04:40.543 -05 [21584] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-06-27 23:36:56 -05
+2024-06-29 18:04:41.237 -05 [21584] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-06-29 18:04:41.240 -05 [21584] LOG:  redo comienza en 0/244A7E8
+2024-06-29 18:04:41.331 -05 [21584] LOG:  largo de registro no válido en 0/28BBB30: se esperaba al menos 24, se obtuvo 0
+2024-06-29 18:04:41.331 -05 [21584] LOG:  redo listo en 0/28BBAF8 utilización del sistema: CPU: usuario: 0.00 s, sistema: 0.04 s, transcurrido: 0.09 s
+2024-06-29 18:04:41.336 -05 [19880] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-06-29 18:04:41.554 -05 [19880] LOG:  checkpoint complete: wrote 973 buffers (5.9%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.062 s, sync=0.151 s, total=0.220 s; sync files=301, longest=0.008 s, average=0.001 s; distance=4548 kB, estimate=4548 kB; lsn=0/28BBB30, redo lsn=0/28BBB30
+2024-06-29 18:04:41.576 -05 [1564] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-06-29 21:40:36.648 -05 [18112] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-06-29 21:44:07.887 -05 [19880] LOG:  empezando checkpoint: time
+2024-06-29 21:44:14.048 -05 [19880] LOG:  checkpoint complete: wrote 57 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=6.128 s, sync=0.022 s, total=6.163 s; sync files=51, longest=0.002 s, average=0.001 s; distance=232 kB, estimate=4117 kB; lsn=0/28F5BD0, redo lsn=0/28F5B98
+2024-06-29 21:46:08.495 -05 [1564] LOG:  proceso de servidor (PID 9508) fue terminado por una excepción 0xC000013A
+2024-06-29 21:46:08.495 -05 [1564] DETALLE:  El proceso que falló estaba ejecutando: SELECT n.nspname as "Schema",
+	  c.relname as "Name",
+	  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as "Type",
+	  pg_catalog.pg_get_userbyid(c.relowner) as "Owner"
+	FROM pg_catalog.pg_class c
+	     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+	     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+	WHERE c.relkind IN ('r','p','')
+	      AND n.nspname <> 'pg_catalog'
+	      AND n.nspname !~ '^pg_toast'
+	      AND n.nspname <> 'information_schema'
+	  AND pg_catalog.pg_table_is_visible(c.oid)
+	ORDER BY 1,2;
+2024-06-29 21:46:08.495 -05 [1564] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-06-29 21:46:08.496 -05 [1564] LOG:  terminando todos los otros procesos de servidor activos
+2024-06-29 21:46:08.525 -05 [1564] LOG:  todos los procesos fueron terminados; reinicializando
+2024-06-29 21:46:08.559 -05 [20364] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-06-29 21:44:14 -05
+2024-06-29 21:46:09.146 -05 [20364] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-06-29 21:46:09.150 -05 [20364] LOG:  redo comienza en 0/28F5B98
+2024-06-29 21:46:09.150 -05 [20364] LOG:  largo de registro no válido en 0/28F5C80: se esperaba al menos 24, se obtuvo 0
+2024-06-29 21:46:09.150 -05 [20364] LOG:  redo listo en 0/28F5C48 utilización del sistema: CPU: usuario: 0.00 s, sistema: 0.00 s, transcurrido: 0.00 s
+2024-06-29 21:46:09.156 -05 [13716] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-06-29 21:46:09.164 -05 [13716] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.010 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/28F5C80, redo lsn=0/28F5C80
+2024-06-29 21:46:09.193 -05 [1564] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-06-29 21:46:10.169 -05 [1564] LOG:  proceso ayudante «logical replication launcher» (PID 14288) fue terminado por una excepción 0xC000013A
+2024-06-29 21:46:10.169 -05 [1564] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-06-29 21:46:10.169 -05 [1564] LOG:  terminando todos los otros procesos de servidor activos
+2024-06-29 21:46:10.185 -05 [1564] LOG:  todos los procesos fueron terminados; reinicializando
+2024-06-29 21:46:10.218 -05 [12368] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-06-29 21:46:09 -05
+2024-06-29 21:46:10.621 -05 [12368] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-06-29 21:46:10.624 -05 [12368] LOG:  largo de registro no válido en 0/28F5CF8: se esperaba al menos 24, se obtuvo 0
+2024-06-29 21:46:10.624 -05 [12368] LOG:  no se requiere redo
+2024-06-29 21:46:10.629 -05 [20196] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-06-29 21:46:10.638 -05 [20196] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.011 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/28F5CF8, redo lsn=0/28F5CF8
+2024-06-29 21:46:10.660 -05 [1564] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-06-29 21:46:11.169 -05 [1564] LOG:  proceso ayudante «logical replication launcher» (PID 3420) fue terminado por una excepción 0xC000013A
+2024-06-29 21:46:11.169 -05 [1564] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-06-29 21:46:11.169 -05 [1564] LOG:  terminando todos los otros procesos de servidor activos
+2024-06-29 21:46:11.185 -05 [1564] LOG:  todos los procesos fueron terminados; reinicializando
+2024-06-29 21:46:11.217 -05 [20164] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-06-29 21:46:10 -05
+2024-06-29 21:46:11.631 -05 [20164] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-06-29 21:46:11.634 -05 [20164] LOG:  largo de registro no válido en 0/28F5D70: se esperaba al menos 24, se obtuvo 0
+2024-06-29 21:46:11.634 -05 [20164] LOG:  no se requiere redo
+2024-06-29 21:46:11.640 -05 [18956] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-06-29 21:46:11.648 -05 [18956] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.012 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/28F5D70, redo lsn=0/28F5D70
+2024-06-29 21:46:11.679 -05 [1564] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-06-29 21:46:11.811 -05 [1564] LOG:  proceso ayudante «logical replication launcher» (PID 19260) fue terminado por una excepción 0xC000013A
+2024-06-29 21:46:11.811 -05 [1564] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-06-29 21:46:11.811 -05 [1564] LOG:  terminando todos los otros procesos de servidor activos
+2024-06-29 21:46:11.826 -05 [1564] LOG:  todos los procesos fueron terminados; reinicializando
+2024-06-29 21:46:11.866 -05 [10796] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-06-29 21:46:11 -05
+2024-06-29 21:46:12.143 -05 [20092] LOG:  process 20092 taking over ProcSignal slot 124, but it's not empty
+2024-06-29 21:46:12.155 -05 [1564] LOG:  proceso de inicio (PID 10796) fue terminado por una excepción 0xC000013A
+2024-06-29 21:46:12.155 -05 [1564] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-06-29 21:46:12.155 -05 [1564] LOG:  abortando el inicio debido a una falla en el procesamiento de inicio
+^C2024-06-29 21:46:12.160 -05 [14340] LOG:  process 14340 taking over ProcSignal slot 126, but it's not empty
+2024-07-01 22:08:48.830 -05 [22708] LOG:  iniciando PostgreSQL 16.3, compiled by Visual C++ build 1939, 64-bit
+2024-07-01 22:08:48.833 -05 [22708] LOG:  escuchando en la dirección IPv6 «::1», port 5432
+2024-07-01 22:08:48.833 -05 [22708] LOG:  escuchando en la dirección IPv4 «127.0.0.1», port 5432
+2024-07-01 22:08:48.880 -05 [2144] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-06-29 21:46:11 -05
+2024-07-01 22:08:49.483 -05 [2144] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-07-01 22:08:49.487 -05 [2144] LOG:  largo de registro no válido en 0/28F5DE8: se esperaba al menos 24, se obtuvo 0
+2024-07-01 22:08:49.487 -05 [2144] LOG:  no se requiere redo
+2024-07-01 22:08:49.493 -05 [19040] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-07-01 22:08:49.502 -05 [19040] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.012 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/28F5DE8, redo lsn=0/28F5DE8
+2024-07-01 22:08:49.523 -05 [22708] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-07-01 22:09:14.086 -05 [13020] FATAL:  la autentificación password falló para el usuario «11»
+2024-07-01 22:09:14.086 -05 [13020] DETALLE:  No existe el rol «11».
+	Connection matched file "C:/Users/User/Desktop/ClasesPW/BD/DATA/pg_hba.conf" line 117: "host    all             all             ::1/128                 password"
+2024-07-01 22:18:49.528 -05 [19040] LOG:  empezando checkpoint: time
+2024-07-01 22:18:50.321 -05 [19040] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.772 s, sync=0.007 s, total=0.793 s; sync files=7, longest=0.002 s, average=0.001 s; distance=30 kB, estimate=30 kB; lsn=0/28FD7F0, redo lsn=0/28FD7B8
+2024-07-01 22:29:28.745 -05 [13900] ERROR:  faltan datos en la columna Â«last_nameÂ»
+2024-07-01 22:29:28.745 -05 [13900] CONTEXTO:  COPY actors, line 2: "47;Afghanistan"
+2024-07-01 22:29:28.745 -05 [13900] SENTENCIA:  copy actors(id,first_name,last_name) from 'C:\Users\User\Desktop\s11-01-data\country.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:33:49.342 -05 [19040] LOG:  empezando checkpoint: time
+2024-07-01 22:33:51.956 -05 [19040] LOG:  checkpoint complete: wrote 25 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.600 s, sync=0.008 s, total=2.614 s; sync files=12, longest=0.002 s, average=0.001 s; distance=134 kB, estimate=134 kB; lsn=0/291F278, redo lsn=0/291F240
+2024-07-01 22:34:21.536 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:34:21.536 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:34:21.536 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:34:21.536 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:35:15.464 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:35:15.464 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:35:15.464 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:35:15.464 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:35:35.777 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:35:35.777 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:35:35.777 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:35:35.777 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:36:07.289 -05 [13900] ERROR:  error de sintaxis en o cerca de Â«clsÂ» en carÃ¡cter 1
+2024-07-01 22:36:07.289 -05 [13900] SENTENCIA:  cls
+	copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:36:11.597 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:36:11.597 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:36:11.597 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:36:11.597 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:37:19.632 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:37:19.632 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:37:19.632 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:37:19.632 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:37:33.345 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:37:33.345 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:37:33.345 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:37:33.345 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:37:57.299 -05 [13900] ERROR:  datos extra despuÃ©s de la Ãºltima columna esperada
+2024-07-01 22:37:57.299 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:37:57.299 -05 [13900] SENTENCIA:  copy movies(title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:38:06.520 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:38:06.520 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:38:06.520 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:38:06.520 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:38:46.396 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:38:46.396 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:38:46.396 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:38:46.396 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:41:34.378 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:41:34.378 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:41:34.378 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:41:34.378 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:42:00.323 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:42:00.323 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:42:00.323 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:42:00.323 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:42:58.950 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:42:58.950 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:42:58.950 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:42:58.950 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:44:29.763 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:44:29.763 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:44:29.763 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:44:29.763 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:44:49.661 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:44:49.661 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:44:49.661 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:44:49.661 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:44:53.021 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:44:53.021 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:44:53.021 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:44:53.021 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:46:03.381 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:46:03.381 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:46:03.381 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:46:03.381 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:47:15.873 -05 [13900] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:47:15.873 -05 [13900] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:47:15.873 -05 [13900] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:47:15.873 -05 [13900] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:47:31.185 -05 [22708] LOG:  proceso de servidor (PID 13900) fue terminado por una excepción 0xC000013A
+2024-07-01 22:47:31.185 -05 [22708] DETALLE:  El proceso que falló estaba ejecutando: copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:47:31.185 -05 [22708] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-07-01 22:47:31.185 -05 [22708] LOG:  terminando todos los otros procesos de servidor activos
+2024-07-01 22:47:31.205 -05 [22708] LOG:  todos los procesos fueron terminados; reinicializando
+2024-07-01 22:47:31.236 -05 [15492] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-07-01 22:33:51 -05
+2024-07-01 22:47:31.718 -05 [15492] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-07-01 22:47:31.722 -05 [15492] LOG:  redo comienza en 0/291F240
+2024-07-01 22:47:31.722 -05 [15492] LOG:  largo de registro no válido en 0/291F328: se esperaba al menos 24, se obtuvo 0
+2024-07-01 22:47:31.722 -05 [15492] LOG:  redo listo en 0/291F2F0 utilización del sistema: CPU: usuario: 0.00 s, sistema: 0.00 s, transcurrido: 0.00 s
+2024-07-01 22:47:31.726 -05 [16600] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-07-01 22:47:31.736 -05 [16600] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.011 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/291F328, redo lsn=0/291F328
+2024-07-01 22:47:31.745 -05 [22708] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-07-01 22:47:32.599 -05 [22708] LOG:  proceso ayudante «logical replication launcher» (PID 14448) fue terminado por una excepción 0xC000013A
+2024-07-01 22:47:32.599 -05 [22708] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-07-01 22:47:32.599 -05 [22708] LOG:  terminando todos los otros procesos de servidor activos
+2024-07-01 22:47:32.616 -05 [22708] LOG:  todos los procesos fueron terminados; reinicializando
+2024-07-01 22:47:32.645 -05 [9448] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-07-01 22:47:31 -05
+2024-07-01 22:47:32.975 -05 [9448] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-07-01 22:47:32.978 -05 [9448] LOG:  largo de registro no válido en 0/291F3A0: se esperaba al menos 24, se obtuvo 0
+2024-07-01 22:47:32.978 -05 [9448] LOG:  no se requiere redo
+2024-07-01 22:47:32.983 -05 [1988] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-07-01 22:47:32.992 -05 [1988] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.011 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/291F3A0, redo lsn=0/291F3A0
+2024-07-01 22:47:33.027 -05 [22708] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-07-01 22:47:33.615 -05 [22708] LOG:  proceso ayudante «logical replication launcher» (PID 13652) fue terminado por una excepción 0xC000013A
+2024-07-01 22:47:33.615 -05 [22708] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-07-01 22:47:33.615 -05 [22708] LOG:  terminando todos los otros procesos de servidor activos
+2024-07-01 22:47:33.618 -05 [22708] LOG:  se recibió petición de apagado rápido
+^C2024-07-01 22:47:56.324 -05 [14960] LOG:  iniciando PostgreSQL 16.3, compiled by Visual C++ build 1939, 64-bit
+2024-07-01 22:47:56.327 -05 [14960] LOG:  escuchando en la dirección IPv6 «::1», port 5432
+2024-07-01 22:47:56.328 -05 [14960] LOG:  escuchando en la dirección IPv4 «127.0.0.1», port 5432
+2024-07-01 22:47:56.359 -05 [22752] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-07-01 22:47:32 -05
+2024-07-01 22:47:56.685 -05 [22752] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-07-01 22:47:56.689 -05 [22752] LOG:  largo de registro no válido en 0/291F418: se esperaba al menos 24, se obtuvo 0
+2024-07-01 22:47:56.689 -05 [22752] LOG:  no se requiere redo
+2024-07-01 22:47:56.694 -05 [1684] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-07-01 22:47:56.702 -05 [1684] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.011 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/291F418, redo lsn=0/291F418
+2024-07-01 22:47:56.731 -05 [14960] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-07-01 22:49:54.886 -05 [21492] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:49:54.886 -05 [21492] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:49:54.886 -05 [21492] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:49:54.886 -05 [21492] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:52:02.642 -05 [21492] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:52:02.642 -05 [21492] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:52:02.642 -05 [21492] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:52:02.642 -05 [21492] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:53:04.450 -05 [21492] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:53:04.450 -05 [21492] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:53:04.450 -05 [21492] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:53:04.450 -05 [21492] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 22:55:38.370 -05 [21492] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 22:55:38.370 -05 [21492] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 22:55:38.370 -05 [21492] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 22:55:38.370 -05 [21492] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:00:45.599 -05 [21492] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:00:45.599 -05 [21492] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:00:45.599 -05 [21492] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:00:45.599 -05 [21492] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:00:53.019 -05 [21492] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:00:53.019 -05 [21492] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:00:53.019 -05 [21492] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:00:53.019 -05 [21492] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:01:02.244 -05 [21492] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:01:02.244 -05 [21492] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:01:02.244 -05 [21492] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:01:02.244 -05 [21492] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:02:09.843 -05 [21492] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:02:09.843 -05 [21492] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:02:09.843 -05 [21492] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:02:09.843 -05 [21492] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:02:13.992 -05 [14960] LOG:  proceso de servidor (PID 21492) fue terminado por una excepción 0xC000013A
+2024-07-01 23:02:13.992 -05 [14960] DETALLE:  El proceso que falló estaba ejecutando: copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:02:13.992 -05 [14960] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-07-01 23:02:13.992 -05 [14960] LOG:  terminando todos los otros procesos de servidor activos
+2024-07-01 23:02:14.008 -05 [14960] LOG:  todos los procesos fueron terminados; reinicializando
+2024-07-01 23:02:14.039 -05 [1204] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-07-01 22:47:56 -05
+2024-07-01 23:02:14.508 -05 [14960] LOG:  proceso de inicio (PID 1204) fue terminado por una excepción 0xC000013A
+2024-07-01 23:02:14.508 -05 [14960] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-07-01 23:02:14.508 -05 [14960] LOG:  abortando el inicio debido a una falla en el procesamiento de inicio
+2024-07-01 23:02:14.508 -05 [9916] LOG:  process 9916 taking over ProcSignal slot 124, but it's not empty
+^C2024-07-01 23:02:14.524 -05 [21136] LOG:  process 21136 taking over ProcSignal slot 126, but it's not empty
+2024-07-01 23:07:31.997 -05 [3256] LOG:  iniciando PostgreSQL 16.3, compiled by Visual C++ build 1939, 64-bit
+2024-07-01 23:07:31.999 -05 [3256] LOG:  escuchando en la dirección IPv6 «::1», port 5432
+2024-07-01 23:07:32.000 -05 [3256] LOG:  escuchando en la dirección IPv4 «127.0.0.1», port 5432
+2024-07-01 23:07:32.032 -05 [14564] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-07-01 22:47:56 -05
+2024-07-01 23:07:32.654 -05 [14564] LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2024-07-01 23:07:32.657 -05 [14564] LOG:  redo comienza en 0/291F490
+2024-07-01 23:07:32.657 -05 [14564] LOG:  largo de registro no válido en 0/291F4C8: se esperaba al menos 24, se obtuvo 0
+2024-07-01 23:07:32.657 -05 [14564] LOG:  redo listo en 0/291F490 utilización del sistema: CPU: usuario: 0.00 s, sistema: 0.00 s, transcurrido: 0.00 s
+2024-07-01 23:07:32.662 -05 [20180] LOG:  empezando checkpoint: end-of-recovery immediate wait
+2024-07-01 23:07:32.671 -05 [20180] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.011 s; sync files=2, longest=0.002 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/291F4C8, redo lsn=0/291F4C8
+2024-07-01 23:07:32.682 -05 [3256] LOG:  el sistema de bases de datos está listo para aceptar conexiones
+2024-07-01 23:08:47.110 -05 [15224] ERROR:  no existe la relaciÃ³n Â«countriesÂ»
+2024-07-01 23:08:47.110 -05 [15224] SENTENCIA:  copy countries(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:09:00.895 -05 [15224] ERROR:  no existe la relaciÃ³n Â«moviesÂ»
+2024-07-01 23:09:00.895 -05 [15224] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:09:22.002 -05 [15224] ERROR:  no existe la relaciÃ³n Â«moviesÂ»
+2024-07-01 23:09:22.002 -05 [15224] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:09:33.256 -05 [12348] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:09:33.256 -05 [12348] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:09:33.256 -05 [12348] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:09:33.256 -05 [12348] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:12:00.813 -05 [12348] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:12:00.813 -05 [12348] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:12:00.813 -05 [12348] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:12:00.813 -05 [12348] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:13:38.205 -05 [12348] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:13:38.205 -05 [12348] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:13:38.205 -05 [12348] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:13:38.205 -05 [12348] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:17:56.741 -05 [12348] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:17:56.741 -05 [12348] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:17:56.741 -05 [12348] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:17:56.741 -05 [12348] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:26:10.211 -05 [12348] ERROR:  el valor nulo en la columna Â«createdAtÂ» de la relaciÃ³n Â«moviesÂ» viola la restricciÃ³n de no nulo
+2024-07-01 23:26:10.211 -05 [12348] DETALLE:  La fila que falla contiene (1, Jour se lÃƒÂ¨ve, Le (Daybreak), Crime|Drama|Romance|Thriller, null, null).
+2024-07-01 23:26:10.211 -05 [12348] CONTEXTO:  COPY movies, line 2: "1;Jour se lÃƒÂ¨ve, Le (Daybreak);Crime|Drama|Romance|Thriller"
+2024-07-01 23:26:10.211 -05 [12348] SENTENCIA:  copy movies(id,title,genres) from 'C:\Users\User\Desktop\s11-01-data\movie.csv' DELIMITER ';' CSV HEADER;
+2024-07-01 23:34:44.386 -05 [4940] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-07-01 23:35:49.355 -05 [22848] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-07-01 23:37:32.732 -05 [20180] LOG:  empezando checkpoint: time
+2024-07-01 23:37:33.611 -05 [20180] LOG:  checkpoint complete: wrote 9 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.869 s, sync=0.005 s, total=0.880 s; sync files=8, longest=0.001 s, average=0.001 s; distance=1 kB, estimate=1 kB; lsn=0/291F938, redo lsn=0/291F900
+2024-07-02 00:50:49.248 -05 [15068] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-07-02 00:52:32.709 -05 [22028] LOG:  no se pudo recibir datos del cliente: unrecognized winsock error 10054
+2024-07-02 00:55:25.679 -05 [3256] LOG:  proceso de servidor (PID 12348) fue terminado por una excepción 0xC000013A
+2024-07-02 00:55:25.679 -05 [3256] DETALLE:  El proceso que falló estaba ejecutando: SELECT n.nspname as "Schema",
+	  c.relname as "Name",
+	  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as "Type",
+	  pg_catalog.pg_get_userbyid(c.relowner) as "Owner"
+	FROM pg_catalog.pg_class c
+	     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+	     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+	WHERE c.relkind IN ('r','p','')
+	      AND n.nspname <> 'pg_catalog'
+	      AND n.nspname !~ '^pg_toast'
+	      AND n.nspname <> 'information_schema'
+	  AND pg_catalog.pg_table_is_visible(c.oid)
+	ORDER BY 1,2;
+2024-07-02 00:55:25.679 -05 [3256] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-07-02 00:55:25.679 -05 [3256] LOG:  terminando todos los otros procesos de servidor activos
+2024-07-02 00:55:25.696 -05 [3256] LOG:  todos los procesos fueron terminados; reinicializando
+2024-07-02 00:55:25.728 -05 [21272] LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2024-07-01 23:37:33 -05
+2024-07-02 00:55:26.113 -05 [11420] LOG:  process 11420 taking over ProcSignal slot 124, but it's not empty
+2024-07-02 00:55:26.131 -05 [3256] LOG:  proceso de inicio (PID 21272) fue terminado por una excepción 0xC000013A
+2024-07-02 00:55:26.131 -05 [3256] HINT:  Vea el archivo «ntstatus.h» para una descripción del valor hexadecimal.
+2024-07-02 00:55:26.131 -05 [3256] LOG:  abortando el inicio debido a una falla en el procesamiento de inicio
+2024-07-02 00:55:26.135 -05 [16420] LOG:  process 16420 taking over ProcSignal slot 126, but it's not empty
+^C
